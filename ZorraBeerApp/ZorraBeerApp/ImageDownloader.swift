@@ -32,7 +32,7 @@ class ImageDownloader {
                 }
                 
                 guard let responsedData = data else {
-                    //completion(nil)
+                    //completion(nil) // убрал //completion(nil), потому что возвращала пустую картинку и не давала поставить заглушку
                     return
                 }
                 

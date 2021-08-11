@@ -72,6 +72,7 @@ class MainViewController: UIViewController {
     @objc func refresh(_ sender: Any) { // действие, при запуске refreshControl
         print("Запустили refresh control")
         beerArray = [] // очистили массив с пивом
+        reloadCollectionView() // перезагружаем collectionView
         
         pageNumber = Int.random(in: 1...40) //меняем номер запрашиваемой страницы
         requestBeerJson() { // запрашиваем пиво
@@ -100,6 +101,7 @@ class MainViewController: UIViewController {
                 print("Не был получен ответ на url-запрос, ошибка: \(error)")
                 return
             }
+            
             // парсим json-ответ
             do {
                 let parsedResponse = try JSONDecoder().decode(Array<BeerJsonResponseStruct>.self, from: responsedData)
@@ -107,7 +109,6 @@ class MainViewController: UIViewController {
                 //print(parsedResponse[0])
                 print("parsedResponse.count = ", parsedResponse.count)
                 if parsedResponse.count == 0 { // если в ответе ноль результатов - запрашиваем повторно
-                    
                     
                     /* -- примечание кода ниже:
                      
@@ -132,6 +133,7 @@ class MainViewController: UIViewController {
                     }
                 }
                 
+                
 //                for element in parsedResponse { // заполняем массив с пивом
 //                    let beer = Beer(name: element.name, description: element.description, imageUrl: element.imageUrl, ingredients: String(element.ingredients.hops[0].name), foodPairing: element.food_pairing[0])
 //                    self.beerArray.append(beer) // добавляем в массив пиво
@@ -142,9 +144,8 @@ class MainViewController: UIViewController {
                     self.beerArray.append(beer) // добавляем в массив пиво
                 }
                 
-                DispatchQueue.main.async { // в основной очереди перезагружаем collectionView
-                    self.beerCollectionView?.reloadData()
-                }
+                self.reloadCollectionView() // перезагружаем collectionView
+
             }
             catch let parsingResponseError {
                 print("Ошибка парсинга json-ответа: \(parsingResponseError)")
@@ -152,6 +153,12 @@ class MainViewController: UIViewController {
         }
         .resume() // для URLDataTask
         completion() // помечаем, что функция выполнена
+    }
+    
+    func reloadCollectionView() { // перезагружаем collectionView
+        DispatchQueue.main.async { // в основной очереди перезагружаем collectionView
+            self.beerCollectionView?.reloadData()
+        }
     }
     
     
